@@ -108,7 +108,7 @@ For each pool, our null comparative for how often we would expect it to appear c
 From this, we can clearly see that the clusters are caused by only a couple of pools.
 They are: ACC115 in the middle cluster, and GLYPH-UoA-616.1-21 and GLYPH-UoA-632.1-21 in the upper cluster.
 
-# 4. Competitive mapping of outlier pools
+# 4. Comparative mapping of outlier pools
 One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. 
 This can be confirmed with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
 
