@@ -109,3 +109,15 @@ From this, we can clearly see that the clusters are caused by only a couple of p
 They are: ACC115 in the middle cluster, and GLYPH-UoA-616.1-21 and GLYPH-UoA-632.1-21 in the upper cluster.
 
 # 4. Competitive mapping of outlier pools
+One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. 
+This can be confirmed with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
+
+These were the reference genomes used: 
+[Rigid ryegrass genome](https://doi.org/10.3389/fgene.2022.1012694)
+[Annual ryegrass genome](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_019182485.1/)
+[Perennial ryegrass genome](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_019359855.2/)
+
+![comp_mapping](https://github.com/cjdjpj/weedomics/blob/main/figures/comparative_mapping.png)
+
+Unfortunately, while our mapping reflects what we already know from our summary statistics (that the outlier pools are significantly more differentiated than the rest of our data), we were unable to identify a pool that mapped better to the outlier pools.
+Either way, the fact that these pools are outliers is helpful in the next step - identifying modes of convergent evolution - in that we now know to exclude them from the analysis.
