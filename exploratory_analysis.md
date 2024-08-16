@@ -49,18 +49,20 @@ Computing $F_{st}$ and $\pi$ using popgen
 Overall, our ryegrass populations are not too differentiated.
 
 # 3. Identifying structural patterns
-We wish to identify structural patterns in our populations to learn more about demographical and evolutionary forces acting on our populations, as well as test them against what we expect under standard population genetic theory.
+We wish to identify structural patterns in our populations to learn more about demographical and evolutionary forces acting on them, as well as test them against what we expect under standard population genetic theory.
 
 This will also allow us to identify patterns that we can measure up against glyphosate resistance.
 
 #### Hierarchical clustering
 Since $F_{st}$ is a genetic "distance", we can conduct a naive clustering based on $F_{st}$ using hierarchical clustering.
+> visualize with `plot_dendrogram.py`
+
 ![Hierarchical_clustering_fst](https://github.com/cjdjpj/weedomics/blob/main/figures/dendrogram_fst.png)
 From the dendrogram, we can see that overall, clusters are not well defined and thus this analysis isn't too informative. 
-We can compare this dendrogram to hierarchical clustering based on **geographic distance** (km), where there are much more distinct clusters (populations of ryegrass generally collected at hotspots).
+We can compare this dendrogram to hierarchical clustering based on **geographical distance** (km), where there are much more distinct clusters (populations of ryegrass are generally collected at hotspots).
 
 To compute an accurate measure of geographical distance, we use the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula)
-> visualize with `plot_dendrogram.py`
+> compute distances using `rust_utils/orthodromic_distance`
 
 ![Hierarchical_clustering_distance](https://github.com/cjdjpj/weedomics/blob/main/figures/dendrogram_dist.png)
 
@@ -72,10 +74,10 @@ We can test this hypothesis by computing correlation statistics between our two 
 From this analysis, only 167 of our 246 pools will be used, since the rest do not have coordinate data.
 
 #### Mantel test
-Since both $F_{st}$ and geographical distances are $n \times n$ distance matrices, a reasonable and valid test for correlation is the mantel test. ([Legendre P, Fortin MJ](https://doi.org/10.1111/j.1755-0998.2010.02866.x))
+Since both $F_{st}$ and geographical distances are $n \times n$ distance matrices, a reasonable and useful test for correlation is the mantel test. ([Legendre P and Fortin MJ 2010](https://doi.org/10.1111/j.1755-0998.2010.02866.x))
 > compute mantel statistic using `mantel_t.py`
 
-We get an r-value of $0.1175$ and a p-value of $0.0109$, showing a statistically significant positive correlation between geographical distance and $F_{st}$ and  supporting isolation by distance.
+We get an r-value of $0.1175$ and a p-value of $0.01$, showing a statistically significant positive correlation between geographical distance and $F_{st}$ and supporting isolation by distance.
 
 #### Linear regression
 Another way to detect correlations between $F_{st}$ and geographical distance is to collapse the $n \times n$ matrix into a 1D array of pairwise distances to conduct a simple linear regression analysis. This flattened collection would remove redundancy (symmetric pairs - AxB is the same as BxA) and be of length $\frac{n \times (n-1)}{2}$
@@ -86,10 +88,11 @@ This allows us to isolate specific pairs of pools that support/do not support is
 ![linreg](https://github.com/cjdjpj/weedomics/blob/main/figures/linreg.png)
 
 Using a linear regression, we reinforce our result from the mantel test - getting a statistically significant positive correlation between $F_{st}$ and geographical distance.
-However, we also see some sort of structural separation, a very clear upper cluster with higher $F_{st}$ than the rest of the pools and a less well defined middle cluster. Most of the pool pairs exist in the bottom cluster.
+
+However, we also see some sort of structural separation, a very clear upper cluster with higher $F_{st}$ than the rest of the pools and a less well defined middle cluster. Most of the pool pairs are in the bottom cluster.
 
 #### Linear regression clusters
-We can separate the clusters (by eyeball) and conduct separate linear regressions for each of the clusters.
+We can separate the clusters (by eyeball analysis) and conduct separate linear regressions for each of the clusters.
 > visualize using `plot_fst_vs_dist_clusters.py`
 
 ![linreg_clusters](https://github.com/cjdjpj/weedomics/blob/main/figures/linreg_clusters.png)
@@ -109,8 +112,9 @@ From this, we can clearly see that the clusters are caused by only a couple of p
 They are: ACC115 in the middle cluster, and GLYPH-UoA-616.1-21 and GLYPH-UoA-632.1-21 in the upper cluster.
 
 # 4. Comparative mapping of outlier pools
-One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. 
-This can be confirmed with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
+One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. It could be that the bottom cluster is *Lolium perenne*, and the middle cluster is a hybrid of *Lolium rigidum* and *perenne*.
+
+This can be evaluated with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
 
 These were the reference genomes used: 
 [Rigid ryegrass genome](https://doi.org/10.3389/fgene.2022.1012694)
@@ -119,5 +123,17 @@ These were the reference genomes used:
 
 ![comp_mapping](https://github.com/cjdjpj/weedomics/blob/main/figures/comparative_mapping.png)
 
-Unfortunately, while our mapping reflects what we already know from our summary statistics (that the outlier pools are significantly more differentiated than the rest of our data), we were unable to identify a pool that mapped better to the outlier pools.
+Unfortunately, while our mapping reflects what we already know from our summary statistics (that the outlier pools are significantly more differentiated than the rest of our data), we were unable to identify a reference genome that mapped better to the outlier pools.
 Either way, the fact that these pools are outliers is helpful in the next step - identifying modes of convergent evolution - in that we now know to exclude them from the analysis.
+
+# 5. A few more visualizations
+#### Linear regression with glyphosate resistance as hue (without our outlier populations)
+> visualize with `plot_fst_vs_dist_phen.py`
+
+![linreg_phen](https://github.com/cjdjpj/weedomics/blob/main/figures/linreg_phen.png)
+
+#### Variance of heterozygosity for different window sizes.
+This was originally computed to allow for a way to determine the optimal window size for computing summary statistics that reduced noise while keeping definition. Since then, a cubic spline method [Beissinger et al. 2015](https://doi.org/10.1186/s12711-015-0105-9) was used in its replacement.
+>visualize with `plot_windowsize_variances.py`
+
+![windows_variance](https://github.com/cjdjpj/weedomics/blob/main/figures/windows_variance.png)
