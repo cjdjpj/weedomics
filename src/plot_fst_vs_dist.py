@@ -8,7 +8,7 @@ import trims
 distances_path = "../reference/orthodromic_distance.csv"
 fst_path = "../data/all_pools/genome_mean_fst.csv"
 chr = "Genome-wide"
-df = utils.create_df(distances_path, fst_path, trims.dist + trims.outlier)
+df = utils.create_df(distances_path, fst_path, trims.dist)
 
 plt.figure(figsize = (9,9))
 plt.xlabel("Distance (km)")

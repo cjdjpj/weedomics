@@ -11,7 +11,7 @@ comp_map = pd.read_csv(mapping_path)
 comp_map["Percent_properly_paired"] = comp_map["Percent_properly_paired"].map(lambda x: 100 * x)
 
 plt.figure(figsize = (9,9))
-plt.title("Comparative mapping of pools of interest to Lolium Rigidum and Perenne ref genomes")
+plt.title("Comparative mapping of pools of interest to various ryegrass reference genomes")
 plt.ylabel("Percent properly paired (%)")
 plt.xlabel("ClusterNumber-PoolName")
 plt.ylim(70, 100)

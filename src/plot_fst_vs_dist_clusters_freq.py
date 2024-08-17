@@ -8,7 +8,6 @@ import trims
 distances_path = "../reference/orthodromic_distance.csv"
 fst_path = "../data/all_pools/genome_mean_fst.csv"
 chr = "Genome-wide"
-cluster_examined = 3
 df = utils.create_df(distances_path, fst_path, trims.dist)
 
 match chr:
@@ -42,24 +41,28 @@ cluster2 = df[(df["fst"] >= cluster1_threshold) & (df["fst"] < cluster2_threshol
 cluster3 = df[df["fst"] >= cluster2_threshold]
 clusters = [cluster1, cluster2, cluster3]
 
-pool_counts = {}
-for pair in clusters[cluster_examined-1]["pool_pairs"]:
-    pool1, pool2 = pair
-    pool_counts[pool1] = pool_counts.get(pool1, 0) + 1
-    pool_counts[pool2] = pool_counts.get(pool2, 0) + 1
+fig, axes = plt.subplots(3, 1, figsize=(12, 18))
 
-n = len(pool_counts)
-for key in pool_counts:
-    pool_counts[key] /= n-1
+for i, cluster in enumerate(clusters, start=1):
+    pool_counts = {}
+    for pair in cluster["pool_pairs"]:
+        pool1, pool2 = pair
+        pool_counts[pool1] = pool_counts.get(pool1, 0) + 1
+        pool_counts[pool2] = pool_counts.get(pool2, 0) + 1
 
-frequencies = pd.DataFrame({"pool": list(pool_counts.keys()), "frequency": list(pool_counts.values())}).sort_values(by="pool")
+    n = len(pool_counts)
+    for key in pool_counts:
+        pool_counts[key] /= n - 1
 
-plt.figure(figsize=(18,9))
-plt.xticks(rotation=90, fontsize = 7)
-plt.title("Frequency of pools occurance in cluster " + str(cluster_examined))
-plt.xlabel("Pool")
-plt.ylabel("Frequency")
-sns.barplot(x = frequencies["pool"], y = frequencies["frequency"], color = sns.color_palette()[cluster_examined-1])
-sns.lineplot(x = range(0, n), y = len(clusters[cluster_examined-1])/len(df), color = "red", linestyle = "--")
+    frequencies = pd.DataFrame({"pool": list(pool_counts.keys()), "frequency": list(pool_counts.values())}).sort_values(by="pool")
+
+    sns.barplot(x=frequencies["pool"], y=frequencies["frequency"], color=sns.color_palette()[i - 1], ax=axes[i - 1])
+    sns.lineplot(x=range(0, n), y=[len(cluster) / len(df)] * n, color="red", linestyle="--", ax=axes[i - 1])
+    axes[i - 1].set_title(f"Frequency of Pools in Cluster {i}")
+    axes[i - 1].set_xlabel("Pool")
+    axes[i - 1].set_ylabel("Frequency")
+    axes[i - 1].tick_params(axis='x', rotation=90, labelsize=7)
+
+plt.tight_layout()
 plt.show()
 

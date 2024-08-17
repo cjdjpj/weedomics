@@ -46,11 +46,15 @@ plt.xlabel("Distance (km)")
 plt.ylabel("Fst")
 plt.title("Geographical distance vs fst clustered linreg (" + chr + ")")
 for cluster in clusters:
-    sns.scatterplot(x = cluster["distances"], y = cluster["fst"], s=15)
+    sns.scatterplot(x = cluster["distances"], y = cluster["fst"])
 
 slope, intercept, r_value, p_value, std_err = linregress(cluster1["distances"], cluster1["fst"])
+slope2, intercept2, r_value2, p_value2, std_err2 = linregress(cluster2["distances"], cluster2["fst"])
+slope3, intercept3, r_value3, p_value3, std_err3 = linregress(cluster3["distances"], cluster3["fst"])
 
 sns.lineplot(x=[df["distances"].min(), df["distances"].max()], y=[df["distances"].min() * slope + intercept, df["distances"].max() * slope + intercept], color="red")
+# sns.lineplot(x=[df["distances"].min(), df["distances"].max()], y=[df["distances"].min() * slope2 + intercept2, df["distances"].max() * slope2 + intercept2], color="red")
+# sns.lineplot(x=[df["distances"].min(), df["distances"].max()], y=[df["distances"].min() * slope3 + intercept3, df["distances"].max() * slope3 + intercept3], color="red")
 print("Slope:", slope)
 print("Intercept:", intercept)
 print("r^2:", r_value**2)

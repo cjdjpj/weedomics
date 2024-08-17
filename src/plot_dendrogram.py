@@ -18,7 +18,8 @@ distances = pd.read_csv(distances_path, index_col = 0)
 fst = utils.trim_df(fst, trims.outlier + trims.dist)
 distances = utils.trim_df(distances, trims.outlier + trims.dist)
 
-# sns.clustermap(distances)
-sns.clustermap(fst)
+sns.clustermap(distances)
+# sns.clustermap(fst)
 
+plt.savefig("dendrogram_dist.png", dpi=300)
 plt.show()

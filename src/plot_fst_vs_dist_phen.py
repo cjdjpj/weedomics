@@ -62,7 +62,7 @@ plt.ylabel("fst")
 plt.title("Geographical distance vs fst with glyphosate resistance as hue (" + chr + ")")
 
 df = df.sort_values("glyphosate")
-sns.scatterplot(x = df["distances"], y = df["fst"], hue = df["glyphosate"], linewidth = 0, s = 15)
+sns.scatterplot(x = df["distances"], y = df["fst"], hue = df["glyphosate"], linewidth = 0)
 sns.lineplot(x=[df["distances"].min(), df["distances"].max()], y=[df["distances"].min() * slope + intercept, df["distances"].max() * slope + intercept], color="red")
 
 plt.text(plt.gca().get_xlim()[0] + 0.87 * (plt.gca().get_xlim()[1]-plt.gca().get_xlim()[0]),
