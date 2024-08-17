@@ -2,7 +2,7 @@
 Generate synchronized pileup file (sync) from pileup for statistical analysis using [poolgen](https://github.com/jeffersonfparil/poolgen/)
 ```bash
 ./poolgen/target/release/poolgen pileup2sync \
-    -f '/path/to/allpools.mpileup' \
+    -f 'allpools.mpileup' \
     --phen-fname 'Lolium_phenotype_uncut.csv' \
     --min-coverage-depth 5 \
     --min-coverage-breadth 0.5 \
@@ -52,15 +52,14 @@ Overall, our ryegrass populations are not too differentiated.
 # 3. Identifying structural patterns
 We wish to identify structural patterns in our populations to learn more about demographical and evolutionary forces acting on them, as well as test them against what we expect under standard population genetic theory.
 
-This will also allow us to identify patterns that we can measure up against glyphosate resistance.
-
 #### Hierarchical clustering
-Since $F_{st}$ is a genetic "distance", we can conduct a naive clustering based on $F_{st}$ using hierarchical clustering.
+For starters, we can conduct a simple hierarchical clustering based on $F_{st}$.
 > visualize with `plot_dendrogram.py`
 
 <img src="figures/dendrogram_fst.png" alt="dendrogram_fst" width="700px"/>
-From the dendrogram, we can see that overall, clusters are not well defined and thus this analysis isn't too informative. 
-We can compare this dendrogram to hierarchical clustering based on **geographical distance** (km), where there are much more distinct clusters (populations of ryegrass are generally collected at hotspots).
+The dendrogram doesn't tell us much more about our pools than the $F_{st}$ matrix did (since it basically just sorts it), but it does group our pools and allows us to specifically investigate the more highly differentiated pools.
+It also tells us that our pools are not in very well defined genetic "clusters".
+We can compare this dendrogram to hierarchical clustering based on geographical distance (km), where there are much more distinct clusters (populations of ryegrass are generally collected at hotspots).
 
 To compute an accurate measure of geographical distance, we use the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula)
 > compute distances using `rust_utils/orthodromic_distance`
@@ -80,15 +79,25 @@ Since both $F_{st}$ and geographical distances are $n \times n$ distance matrice
 
 We get an r-value of $0.1175$ and a p-value of $0.01$, showing a statistically significant positive correlation between geographical distance and $F_{st}$ and supporting isolation by distance.
 
+#### Mantel test across windows
+Instead of just conducting a mantel test using genome-wide mean $F_{st}$, we can conduct a mantel test for each window individually.
+This allows us to isolate windows that don't follow isolation by distance, which may indicate sites of notable resistance genes or other interesting things.
+> compute mantel statistic across windows using `mantel_t_windows.py`
+
+A p-value threshold for non-significantly correlated windows can be empirically determined by taking the top 5% of p-values for a two tailed mantel test.
+Then, these sites can be subject to a functional analysis.
+
 #### Linear regression
-Another way to detect correlations between $F_{st}$ and geographical distance is to collapse the $n \times n$ matrix into a 1D array of pairwise distances to conduct a simple linear regression analysis. This flattened collection would remove redundancy (symmetric pairs - AxB is the same as BxA) and be of length $\frac{n \times (n-1)}{2}$
+Another way to detect correlations between $F_{st}$ and geographical distance is to collapse the $n \times n$ matrix into a 1D array of pairwise distances to conduct a simple linear regression analysis. 
+There are problems with using a linear regression here, since observations are not independent, but it may still be useful and by flattening the matrix we reduce redundancy.
+This flattened array removes symmetric pairs (AxB is the same as BxA) and be of length $\frac{n \times (n-1)}{2}$
 
 This allows us to isolate specific pairs of pools that support/do not support isolation by distance.
 > visualize using `plot_fst_vs_dist.py`
 
 <img src="figures/linreg.png" alt="linreg" width="700px"/>
 
-Using a linear regression, we reinforce our result from the mantel test - getting a statistically significant positive correlation between $F_{st}$ and geographical distance.
+Using a linear regression, we reinforce our result from the mantel test - supporting isolation by distance.
 
 However, we also see some sort of structural separation, a very clear upper cluster with higher $F_{st}$ than the rest of the pools and a less well defined middle cluster. Most of the pool pairs are in the bottom cluster.
 
@@ -98,7 +107,7 @@ We can separate the clusters (by eyeball analysis) and conduct separate linear r
 
 <img src="figures/linreg_clusters.png" alt="linreg_clusters" width="700px"/>
 
-While the middle cluster is still statistically significant in its positive correlation, the upper cluster is not ($p = 0.175$).
+While the middle cluster is still positively, the upper cluster is no longer significantly correlated in either direction.
 In order to know why these clusters exist, we need to first identify which pools are represented in each cluster.
 
 Each pool appears 167 times in the data set, since each pool has a pair with each other pair. We can count the frequency of each pool's appearance in each cluster.
@@ -112,7 +121,7 @@ From this, we can clearly see that the clusters are caused by only a couple of p
 They are: ACC115 in the middle cluster, and GLYPH-UoA-616.1-21 and GLYPH-UoA-632.1-21 in the upper cluster.
 
 # 4. Comparative mapping of outlier pools
-One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. It could be that the bottom cluster is *Lolium perenne*, and the middle cluster is a hybrid of *Lolium rigidum* and *perenne*.
+One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. It could be that the bottom cluster is actually of the species *Lolium perenne*, and the middle cluster is a hybrid of *Lolium rigidum* and *perenne*.
 
 This can be evaluated with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
 
@@ -123,7 +132,7 @@ These were the reference genomes used:
 
 <img src="figures/comparative_mapping.png" alt="comparative_mapping" width="700px"/>
 
-Unfortunately, while our mapping reflects what we already know from our summary statistics (that the outlier pools are significantly more differentiated than the rest of our data), we were unable to identify a reference genome that mapped better to the outlier pools.
+Unfortunately, while our mapping reflects what we already know from our summary statistics (that the outlier pools are significantly more differentiated from the rest of our data), we were unable to identify a reference genome that mapped better to the outlier pools.
 Either way, the fact that these pools are outliers is helpful in the next step - identifying modes of convergent evolution - in that we now know to exclude them from the analysis.
 
 # 5. A few more visualizations
