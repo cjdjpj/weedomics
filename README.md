@@ -6,6 +6,6 @@ What are the evolutionary origins of glyphosate resistance in *Lolium rigidum* i
 Exploratory analysis python and rust code in `src/`
 
 The data consists of 246 sequenced and phenotyped *Lolium rigidum* pools from across Southeast Australia. Glyphosate resistance is measured as the proportion of a tested sample still remaining after treatment.
-![map](https://github.com/cjdjpj/weedomics/blob/main/figures/map.png)
+<img src="figures/map.png" alt="map" width="800px"/>
 
 Does not contain data (except plots) - analysis cannot be entirely replicated.
