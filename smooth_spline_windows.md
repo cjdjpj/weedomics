@@ -4,6 +4,8 @@ The method relies on fitting a cubic smooth spline to the data computed first at
 
 Since gudmc relies on overlapping $F_{st}$ and Tajima's D to identify genomic signatures, windows for the two statistics must be the same. We will first use $F_{st}$ between two pools to identify windows, then compute all other summary statistics using these windows. This also means only two pools will have the same windows and it is only meaningful to compare two pools at any given time.
 
+The spline will also be computed per chromosome, since it doesn't make sense for a window to span chromosomes.
+
 We will focus on ACC001 (fully susceptible) and ACC041 (fully resistant)
 
 First, compute $F_{st}$ per locus

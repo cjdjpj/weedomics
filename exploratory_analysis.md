@@ -23,7 +23,7 @@ A summary of summary statistics
 	- allows us to estimate migration rates under Wright's finite island model
 5. Tajima's D combines $\pi$ and $\theta$ to tell us if a population is evolving neutrally
 
-Computing $F_{st}$ and $\pi$ using popgen
+Computing $F_{st}$ and $\pi$ using poolgen
 ```bash
 ../poolgen/target/release/poolgen heterozygosity \
     -f 'cut_genome_chr.sync' \
