@@ -1,3 +1,4 @@
+# Data Filtering
 There are 2 components to generating sync from pileup with [poolgen](https://github.com/jeffersonfparil/poolgen/)
 1. Pileup pool-seq data
 ```
@@ -25,7 +26,7 @@ Example:
 ```bash
 ./poolgen/target/release/poolgen pileup2sync \
     -f '/data/Lolium/Genomics/SEQUENCES/DNA/Illumina_ALL_SEQUENCES/MERGED/AllPop_Weedomics.mpileup' \
-    --phen-fname 'Lolium_phenotype_uncut.csv' \
+    --phen-fname '/data/Lolium/Genomics/SEQUENCES/DNA/Illumina_ALL_SEQUENCES/MERGED/Lolium_phenotype_uncut.csv' \
     --min-coverage-depth 5 \
     --min-coverage-breadth 0.5 \
     --remove-monoallelic \
