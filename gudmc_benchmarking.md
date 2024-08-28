@@ -10,6 +10,10 @@ Genome-wide Unbiased Discernment of the Modes of Convergent evolution (gudmc) ca
 
 Using quantiNemo2 forward simulations to model each of the evolutionary scenarios, we can assess the accuracy of predictions made by gudmc
 
+<img src="figures/gudmc_evolutionary_scenarios.png" alt="gudmc_evolutionary_scenarios" width="700px"/>
+
+Source: [Paril, 2020](http://hdl.handle.net/11343/267652)
+
 2 stages of simulation
 1. Burn in
 	- Ancestral population is allowed to grow rapidly to a carrying capacity, accumulating heterozygosity
@@ -19,7 +23,7 @@ Using quantiNemo2 forward simulations to model each of the evolutionary scenario
 	- Ancestral population disperses into three new environments with varying selection and migration
 
 ### Parameterization
-Use `rust_utils/create_genome` to generate the files genetic maps and indices (`ntrl_genome`, `qtl_genome`, `ntrl_index`, `qtl_index`).
+Use `rust_utils/create_genome` to generate the genetic maps and indices files (`genome`, `ntrl_index`, `qtl_index`).
 Both neutral and quantitative loci are equally distributed across 7 chromosomes.
 
 #### Burn in
@@ -28,7 +32,7 @@ Both neutral and quantitative loci are equally distributed across 7 chromosomes.
 folder "RUN_burnin"
 filename "burnin"
 
-set t1 1800
+set t1 800
 
 ### DEMOGRAPHY ###
 generations                   t1
@@ -50,8 +54,7 @@ quanti_ini_allele_model       1
 ntrl_mutation_rate            10e-7
 quanti_mutation_rate          10e-7
 quanti_mutation_model         2
-ntrl_genome                   $../ntrl_genome
-quanti_genome                 $../qtl_genome
+genome                        $../genome
 ntrl_locus_index              $../ntrl_index
 quanti_locus_index            $../qtl_index
 
@@ -105,8 +108,7 @@ quanti_ini_genotypes          "../burned_in_quanti1800.dat"
 ntrl_mutation_rate            10e-7
 quanti_mutation_rate          10e-7
 quanti_mutation_model         2
-ntrl_genome                   $../ntrl_genome
-quanti_genome                 $../qtl_genome
+genome                        $../genome
 ntrl_locus_index              $../ntrl_index
 quanti_locus_index            $../qtl_index
 

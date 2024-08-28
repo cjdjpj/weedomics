@@ -35,45 +35,70 @@ fn divide_into_chromosomes(total: u32, num_chr: u32) -> Vec<u32>{
 
 fn main() -> Result<(), Box<dyn Error>>{
     let args = Args::parse();
-    let ntrl_output = File::create("ntrl_genome")?;
-    let qtl_output = File::create("qtl_genome")?;
-    let mut ntrl_index_output = File::create("ntrl_index")?;
-    let mut qtl_index_output = File::create("qtl_index")?;
+    let genome_output = File::create("genome")?;
+    let ntrl_index_output = File::create("ntrl_index")?;
+    let qtl_index_output = File::create("qtl_index")?;
 
     let ntrl_per_chr = divide_into_chromosomes(args.num_ntrl, args.chromosomes);
     let qtl_per_chr = divide_into_chromosomes(args.num_qtl, args.chromosomes);
 
-    write!(&ntrl_output, "{{\n")?;
-    write!(&qtl_output, "{{\n")?;
+    let mut ntrl_index: Vec<u32> = Vec::new();
+    let mut qtl_index: Vec<u32> = Vec::new();
 
+    write!(&genome_output, "{{\n")?;
+
+    let mut global_l = 0;
     for chr in 0..args.chromosomes{
-        let mut ntrl_chr_str = format!(" {{{}: ", chr+1);
-        let mut qtl_chr_str = format!(" {{{}: ", chr+1);
+        let mut chr_str = format!("\t{{{}:", chr+1);
         let ntrl_diff = 100.0/ntrl_per_chr[chr as usize] as f64;
         let ntrl_positions: Vec<f64> = (0..ntrl_per_chr[chr as usize]).map(|i| i as f64 * ntrl_diff).collect();
         let qtl_diff = 100.0/qtl_per_chr[chr as usize] as f64;
         let qtl_positions: Vec<f64> = (0..qtl_per_chr[chr as usize]).map(|i| i as f64 * qtl_diff).collect();
+        let mut genome_positions = [ntrl_positions.clone(), qtl_positions.clone()].concat();
+        genome_positions.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-        for qtl in qtl_positions{
-            qtl_chr_str = format!("{} {}", qtl_chr_str, qtl);
+        let mut ntrl_i: u32 = 0;
+        let mut qtl_i: u32 = 0;
+        for locus in &genome_positions{
+            if *locus == ntrl_positions[ntrl_i as usize]{
+                ntrl_index.push(global_l+1);
+                ntrl_i += 1;
+            }
+            else if *locus == qtl_positions[qtl_i as usize]{
+                qtl_index.push(global_l+1);
+                qtl_i += 1;
+            }
+            else {
+                panic!("you messed up");
+            }
+            global_l += 1;
         }
-        for ntrl in ntrl_positions{
-            ntrl_chr_str = format!("{} {}", ntrl_chr_str, ntrl);
+
+        for locus in genome_positions{
+            chr_str = format!("{chr_str} {locus}");
         }
-        writeln!(&ntrl_output, "{}}}", ntrl_chr_str)?;
-        writeln!(&qtl_output, "{}}}", qtl_chr_str)?;
+        writeln!(&genome_output, "{chr_str}}}")?;
     }
+    writeln!(&genome_output, "}}")?;
 
-    write!(&ntrl_output, "}}")?;
-    write!(&qtl_output, "}}")?;
-
-    let ntrl_index: Vec<u32> = (1..args.num_ntrl+1).collect();
-    let qtl_index: Vec<u32> = (1..args.num_qtl+1).collect();
-
-    let ntrl_str = format!("{{{}}}", ntrl_index.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(" "));
-    let qtl_str = format!("{{{}}}", qtl_index.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(" "));
-    ntrl_index_output.write_all(ntrl_str.as_bytes())?;
-    qtl_index_output.write_all(qtl_str.as_bytes())?;
+    let mut ntrl_str = "{".to_string();
+    for (i, n) in ntrl_index.iter().enumerate(){
+        if i==0{
+            ntrl_str = format!("{ntrl_str}{n}");
+        } else {
+            ntrl_str = format!("{ntrl_str} {n}");
+        }
+    }
+    writeln!(&ntrl_index_output, "{ntrl_str}}}")?;
+    let mut qtl_str = "{".to_string();
+    for (i, n) in qtl_index.iter().enumerate(){
+        if i==0{
+            qtl_str = format!("{qtl_str}{n}");
+        } else {
+            qtl_str = format!("{qtl_str} {n}");
+        }
+    }
+    writeln!(&qtl_index_output, "{qtl_str}}}")?;
 
     Ok(())
 }

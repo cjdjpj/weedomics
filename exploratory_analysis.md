@@ -1,19 +1,4 @@
-# 1. Filtering and Parsing data
-Generate synchronized pileup file (sync) from pileup for statistical analysis using [poolgen](https://github.com/jeffersonfparil/poolgen/)
-```bash
-./poolgen/target/release/poolgen pileup2sync \
-    -f 'allpools.mpileup' \
-    --phen-fname 'Lolium_phenotype_uncut.csv' \
-    --min-coverage-depth 5 \
-    --min-coverage-breadth 0.5 \
-    --remove-monoallelic \
-    --keep-lowercase-reference \
-    --phen-value-col 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 \
-    --n-threads 32 \
-    -o 'genome.sync' &
-```
-
-# 2. Computing population genetics summary statistics
+# 1. Computing population genetics summary statistics
 A summary of summary statistics
 1. $\theta$ (Watterson's estimator) is the number of polymorphic sites/segregating sites
 	- $\theta = 4N_e\mu$ assuming infinite loci
@@ -49,7 +34,7 @@ Computing $F_{st}$ and $\pi$ using poolgen
 
 Overall, our ryegrass populations are not too differentiated.
 
-# 3. Identifying structural patterns
+# 2. Identifying structural patterns
 We wish to identify structural patterns in our populations to learn more about demographical and evolutionary forces acting on them, as well as test them against what we expect under standard population genetic theory.
 
 #### Hierarchical clustering
@@ -120,7 +105,7 @@ For each pool, our null expectation for how often we would expect it to appear c
 From this, we can clearly see that our clusters are caused by only a couple of pools.
 They are: ACC115 in the middle cluster, and GLYPH-UoA-616.1-21 and GLYPH-UoA-632.1-21 in the upper cluster.
 
-# 4. Comparative mapping of outlier pools
+# 3. Comparative mapping of outlier pools
 One possible explanation for the outlier pools is a misclassification of another species such as *Lolium perenne* or *Lolium multiflorum* as *Lolium rigidum*. It could be that the bottom cluster is actually of the species *Lolium perenne*, and the middle cluster is a hybrid of *Lolium rigidum* and *perenne*.
 
 This can be evaluated with a comparative mapping of our sequence reads against the respective reference genomes using the Burrows-Wheeler aligner.
@@ -135,7 +120,7 @@ These were the reference genomes used:
 Unfortunately, while our mapping reflects what we already know from our summary statistics - that the outlier pools are significantly more differentiated from the rest of our data - we were unable to identify a reference genome that mapped better to the outlier pools.
 Either way, the fact that these pools are outliers is helpful in the next step - identifying modes of convergent evolution - in that we now know to exclude them from the analysis.
 
-# 5. A few more visualizations
+# 4. A few more visualizations
 #### Linear regression with glyphosate resistance as hue (without our outlier populations)
 > visualize with `plot_fst_vs_dist_phen.py`
 
